@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SplatSim: Zero-Shot Sim2Real Transfer of RGB Manipulation Policies Using Gaussian Splatting</title>
+
+    <!-- <script>
+        var task_map = {
+            "simple-object-manipulation": "simple_object_manipulation",
+            "visual-goal-reaching": "visual_goal_reaching",
+            "novel-concept-grounding": "novel_concept_grounding",
+            "one-shot-video-imitation": "one_shot_video_imitation",
+            "visual-constraint-satisfaction": "visual_constraint_satisfaction",
+            "visual-reasoning": "visual_reasoning"
+        };
+
+        function updateDemoVideo(category) {
+            // var demo = document.getElementById("single-menu-demos").value;
+            var task = document.getElementById(category + "-menu-tasks").value;
+            var inst = document.getElementById(category + "-menu-instances").value;
+
+            console.log(task_map[category], task, inst)
+
+            var video = document.getElementById(category + "-single-task-video");
+            video.src = "assets/videos/demos/" +
+                task_map[category] +
+                "/" +
+                task +
+                "/" +
+                inst +
+                ".mp4";
+            video.playbackRate = 2.0;
+            video.play();
+        }
+    </script> -->
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="./static/css/academicons.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+    <div class="hero-body" style="background-color: #f2f2f2; position: relative;  overflow: hidden;">
+        <video autoplay muted loop style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: 100%; min-height: 100%; z-index: 1; object-fit: cover; opacity: 0.15;">
+            <source src="assets/simvideos/output_1.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+          </video>
+
+          <div style="position: relative; z-index: 2; text-align: center; padding: 20px;">
+        <div class="container is-max-desktop" >
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <h1 class="title is-1 publication-title">SplatSim: Zero-Shot Sim2Real Transfer of RGB Manipulation Policies Using Gaussian Splatting</h1>
+                    <div class="is-size-5 publication-authors" style="font-size: 1.9rem; font-weight: 900; ">
+                        <span class="author-block">
+                            <a target="_blank" href="https://qureshinomaan.github.io">M.&#160;Nomaan&#160;Qureshi</a>,
+                            <a target="_blank" href="https://sparsh913.github.io/sparshgarg/">Sparsh&#160;Garg</a>,
+                            <a target="_blank" href="https://www.ri.cmu.edu/ri-people/francisco-yandun/">Francisco&#160;Yandun</a>,
+                            <a target="_blank" href="https://davheld.github.io">David&#160;Held</a>,
+                            <a target="_blank" href="https://www.ri.cmu.edu/ri-faculty/george-a-kantor/">George&#160;Kantor</a>,
+                            <a target="_blank" href="https://www.abhisilwal.com">Abhisesh&#160;Silwal</a>
+                            <br>
+                        </span>
+                    </div>
+                    
+                    <!-- <div class="is-size-5 publication-authors">
+                        <span class="author-block"><sup>1</sup>Carnegie Mellon University; </span>
+                    </div> -->
+        
+                    <!-- Adding the CMU image -->
+                    <div class="is-size-5 publication-authors">
+                        <img src="assets/images/ri-cmu.png" alt="Carnegie Mellon University" style="max-width: 400px; margin-top: 20px;">
+                    </div>
+        
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <span class="link-block">
+                                <a target="_blank" href="https://arxiv.org/abs/2409.10161"
+                                   class="external-link button is-normal is-rounded is-dark">
+                                  <span class="icon">
+                                      <i class="ai ai-arxiv"></i>
+                                  </span>
+                                  <span>arXiv</span>
+                                </a>
+                            </span>
+        
+                            <span class="link-block">
+                                <a target="_blank" href="assets/splatsim_paper.pdf"
+                                   class="external-link button is-normal is-rounded is-dark">
+                                  <span class="icon">
+                                      <i class="fas fa-file-pdf"></i>
+                                  </span>
+                                  <span>PDF</span>
+                                </a>
+                            </span>
+        
+                            <span class="link-block">
+                                <a target="_blank" href="https://github.com/qureshinomaan/SplatSim"
+                                   class="external-link button is-normal is-rounded is-dark">
+                                  <span class="icon">
+                                      <i class="fab fa-github"></i>
+                                  </span>
+                                  <span>Code</span>
+                                </a>
+                            </span>
+
+                            <span class="link-block">
+                                <a target="_blank" href="https://x.com/qunomaan/status/1844063704939364475"
+                                   class="external-link button is-normal is-rounded is-dark">
+                                  <span class="icon">
+                                      <i class="fab fa-twitter"></i>
+                                  </span>
+                                  <span>Twitter Thread</span>
+                                </a>
+                            </span>
+        
+                            <span class="link-block">
+                                <a target="_blank" href="https://youtu.be/r_URAU6bpas"
+                                   class="external-link button is-normal is-rounded is-dark">
+                                  <span class="icon">
+                                      <i class="fab fa-youtube"></i>
+                                  </span>
+                                  <span>YouTube Video</span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p style="font-size: 1.rem; font-weight: bolder;">Nomaan is applying for PhD programs for the Fall 2025 cycle</p>
+        <p style="font-size: 1.rem; font-weight: bolder;">Sparsh is looking for full time Industry Positions starting May 2025</p>
+                    
+        
+        
+
+        <section class="section" style="">
+            <div class="container is-max-desktop">
+                <!-- Abstract. -->
+                <div class="columns is-centered has-text-centered">
+                    <div class="column">
+                        <h2 class="title is-3">Abstract</h2>
+                        <div class="content has-text-justified">
+                            <p style="font-size: 125%">
+        Sim2Real transfer, particularly for manipulation policies relying on RGB images, remains a critical challenge in robotics due to the significant domain shift between synthetic and real-world visual data. In this paper, we propose SplatSim, a novel framework that leverages Gaussian Splatting as the primary rendering primitive to reduce the Sim2Real gap for RGB-based manipulation policies. By replacing traditional mesh representations with Gaussian Splats in simulators, SplatSim produces highly photorealistic synthetic data while maintaining the scalability and cost-efficiency of simulation. We demonstrate the effectiveness of our framework by training manipulation policies within SplatSim and deploying them in the real world in a zero-shot manner, achieving an average success rate of 86.25%, compared to 97.5% for policies trained on real-world data.                     </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+    </div>
+
+
+
+
+    <section class="section" style="background-color: #ffffff;">
+        <div class="hero-body">
+            <div class="container">
+                <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                    <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[1/n]</span>
+                    Key Idea: Use Gaussian Splatting as a Renderer over Existing Simulators
+                </h1>
+                <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                    Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+                </h3> -->
+                <div style="display: flex; gap: 10px;">
+                    <div class="item item-sweep_without_exceeding">
+                        <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                            <source src="assets/simvideos/clips/clips_compressed/4.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <!-- <div class="item item-sweep_without_exceeding">
+                        <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                            <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                        </video>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+
+
+
+<section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[2/n]</span>
+                Robot Interacting with Flying Objects 
+            </h1>
+            <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3>
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/flying_objects/flying_objects_3.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/flying_objects/flying_objects_2.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/flying_objects/flying_objects_4.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/flying_objects/flying_objects_5.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #ffffff;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[3/n]</span>
+                You can also control the splat models using Gello!
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 36px; margin-bottom: 20px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[4/n]</span>
+                Simulated Demonstrations for T_Push Task
+            </h1>
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/tpush.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/tpush_1.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/tpush_2.mp4" type="video/mp4">
+                    </video>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #ffffff;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 36px; margin-bottom: 20px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[5/n]</span>
+                Simulated Demonstrations for Apple Picking Task
+            </h1>
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/apple_picking_1.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/apple_picking_2.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/apple_picking_3.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/apple_picking_4.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[6/n]</span>
+                Making Gaussian Splat of the Scene with Robot
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/6.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<section class="section" style="background-color: #ffffff;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[7/n]</span>
+                Then Align the 3D Gaussians of Robot with the Simulator Pointcloud
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/7.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[8/n]</span>
+                Overall Pipeline of SplatSim
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/9.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section" style="background-color: #ffffff;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 48px; margin-bottom: 10px;">
+                <span style="font-size: 48px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[9/n]</span>
+                Results : Zero-Shot Sim2Real Policy Deployment for Push-T
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/11.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 42px; margin-bottom: 10px;">
+                <span style="font-size: 42px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[10/n]</span>
+                Results : Zero-Shot Sim2Real Policy Deployment for Pick-Up-Apple
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/11.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #ffffff;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 42px; margin-bottom: 10px;">
+                <span style="font-size: 42px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[11/n]</span>
+                Results : Zero-Shot Sim2Real Policy Deployment for Orange-On-Plate
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/12.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 42px; margin-bottom: 10px;">
+                <span style="font-size: 42px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[12/n]</span>
+                Results : Zero-Shot Sim2Real Policy Deployment for Assembly
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/13.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #ffffff;">
+    <div class="hero-body">
+        <div class="container">
+            <h1 style="text-align: center; font-size: 42px; margin-bottom: 10px;">
+                <span style="font-size: 42px;  margin-right: 5px; color: #ff8503; font-weight: bold;">[13/n]</span>
+                Results : Zero-Shot Sim2Real Policy Deployment for Pick-Up-Apple
+            </h1>
+            <!-- <h3 style="text-align: center; font-size: 125%; margin-bottom: 20px;">
+                Here’s a fun collection of clips where we reversed gravity in the simulator, highlighting that these renderings are purely simulated.
+            </h3> -->
+            <div style="display: flex; gap: 10px;">
+                <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/14.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- <div class="item item-sweep_without_exceeding">
+                    <video poster="" id="sweep_without_exceeding" autoplay controls muted loop height="100%" playbackRate="2.0">
+                        <source src="assets/simvideos/clips/clips_compressed/8.mp4" type="video/mp4">
+                    </video>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- <section class="section" style="background-color: #f2f2f2;">
+    <div class="hero-body">
+        <div class="container" style="max-width: 60%; padding: 0;">
+            <h1 style="text-align: center; font-size: 36px; margin-bottom: 20px;">
+                Video Giving an Overview of SplatSim
+            </h1>
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+                <iframe 
+                    src="https://www.youtube.com/embed/r_URAU6bpas" 
+                    title="YouTube video player"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section> -->
+
+
+
+
+</section>
+
+<section class="section" id="BibTeX">
+    <div class="container is-max-widescreen content">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@misc{qureshi2024splatsimzeroshotsim2realtransfer,
+            title={SplatSim: Zero-Shot Sim2Real Transfer of RGB Manipulation Policies Using Gaussian Splatting}, 
+            author={Mohammad Nomaan Qureshi and Sparsh Garg and Francisco Yandun and David Held and George Kantor and Abhishesh Silwal},
+            year={2024},
+            eprint={2409.10161},
+            archivePrefix={arXiv},
+            primaryClass={cs.RO},
+            url={https://arxiv.org/abs/2409.10161}, 
+      }</code></pre>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column">
+                <div class="content has-text-centered">
+                    <p>
+                        Website template borrowed from 
+                        <a href="https://github.com/vimalabs/vimalabs.github.io">VIMA</a> and 
+                        <a href="https://github.com/nerfies/nerfies.github.io">NeRFies</a> and <a
+                            href="https://github.com/cliport/cliport.github.io">CLIPort</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>
